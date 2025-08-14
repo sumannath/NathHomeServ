@@ -1,0 +1,7 @@
+services:
+  torleech:
+    image: sumannath/torleech_autologin:1.0
+    container_name: torleech_autologin
+    restart: unless-stopped
+    env_file:
+      - .env
