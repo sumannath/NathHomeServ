@@ -332,6 +332,13 @@ step_casaos_install() {
         return 0
     fi
     
+    # Install Docker first if not present
+    if ! command -v docker &> /dev/null; then
+        print_log "INFO" "Installing Docker..."
+        curl -fsSL https://get.docker.com | sh || return 1
+    fi
+    
+    # Install CasaOS
     curl -fsSL https://get.casaos.io | bash || return 1
     
     # Open ports for CasaOS
