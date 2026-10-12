@@ -99,16 +99,24 @@ prompt_yes_no() {
     local label="$2"
     local default="$3"
     local answer
+    local normalized_default
+
+    normalized_default="${default,,}"
 
     if [[ "$NON_INTERACTIVE" == "true" ]]; then
+        case "$normalized_default" in
+            y|yes|true) printf -v "$variable" true ;;
+            n|no|false) printf -v "$variable" false ;;
+            *) error_exit "Invalid default value for $label: $default" ;;
+        esac
         return 0
     fi
 
     read -r -p "$label [$default]: " answer
     answer="${answer:-$default}"
-    case "$answer" in
-        [Yy]|[Yy][Ee][Ss]) printf -v "$variable" true ;;
-        [Nn]|[Nn][Oo]) printf -v "$variable" false ;;
+    case "${answer,,}" in
+        y|yes|true) printf -v "$variable" true ;;
+        n|no|false) printf -v "$variable" false ;;
         *) error_exit "Answer yes or no for: $label" ;;
     esac
 }
