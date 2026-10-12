@@ -497,9 +497,15 @@ step_disk_setup() {
     fi
     local existing_mount
     existing_mount="$(findmnt -n -o TARGET --source "$disk" 2>/dev/null || true)"
-    if [[ -n "$existing_mount" && "$existing_mount" != "$mount_point" ]]; then
-        print_log "ERROR" "$disk is already mounted at $existing_mount, not $mount_point."
-        return 1
+    if [[ -n "$existing_mount" ]]; then
+        if [[ "$existing_mount" == "/" ]]; then
+            print_log "ERROR" "$disk is the active root filesystem. Choose a different block device or disable SETUP_DISK; this script only mounts additional storage."
+            return 1
+        fi
+        if [[ "$existing_mount" != "$mount_point" ]]; then
+            print_log "ERROR" "$disk is already mounted at $existing_mount, not $mount_point. Choose a different disk or mount point."
+            return 1
+        fi
     fi
 
     local mount_options="defaults"
